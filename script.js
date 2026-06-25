@@ -466,7 +466,7 @@ let currentCatKey = '';
 document.querySelectorAll('.cat-card').forEach(card => {
   card.addEventListener('click', () => {
     const catKey = card.dataset.cat;
-    const panel  = card.dataset.panel; // 'caballero' or 'dama'
+    const panel  = card.dataset.panel;
     currentCatKey = catKey;
     const data = CATALOG[catKey];
     if (!data) return;
@@ -478,40 +478,86 @@ document.querySelectorAll('.cat-card').forEach(card => {
     const iconEl   = document.getElementById('prod-icon-' + panel);
     const backBtn  = prodView.querySelector('.back-btn');
 
-    // Set header info
     titleEl.textContent = data.label;
     iconEl.textContent  = data.icon;
     if (data.isDama) backBtn.classList.add('dama-back');
     else backBtn.classList.remove('dama-back');
 
-    // Build product cards
-    let html = data.products.map(p => buildProductCard(p, data.isDama)).join('');
-    html += buildCtaCard(data.label, catKey, data.isDama);
-    gridEl.innerHTML = html;
-
-    // Switch views
+    // Mostrar loading
+    gridEl.innerHTML = `<div class="cat-loading"><span class="cat-loading-dot"></span><span class="cat-loading-dot"></span><span class="cat-loading-dot"></span></div>`;
     catView.classList.add('hidden');
     prodView.classList.remove('hidden');
-
-    // Scroll to catalog section top
     document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    // Staggered entrance + tilt on product cards
-    setTimeout(() => {
-      prodView.querySelectorAll('.product-card').forEach((c, i) => {
-        c.style.animationDelay = `${i * 0.06}s`;
+    // Leer index.json de la carpeta
+    const folderMap = {
+      gorras: 'Gorras', relojes: 'Relojes', gafas: 'Gafas',
+      camisetas: 'Camisetas', busos: 'Busos', canguros: 'Canguros',
+      jeans: 'Jeans', mochos: 'Mochos', pantalonetas: 'Pantalonetas',
+      polos: 'Polos', conjuntos: 'Conjuntos', correas: 'Correas',
+      morrales: 'Morrales', carrieles: 'Carrieles', pulseras: 'Pulseras',
+      billeteras: 'Billeteras', perfumes: 'Perfumes',
+      'relojes-dama': 'Relojes Dama', 'gafas-dama': 'Gafas Dama',
+      'busos-dama': 'Busos Dama', bolsos: 'Bolsos',
+      'correas-dama': 'Correas Dama', 'perfumes-dama': 'Perfumes Dama',
+      'billeteras-dama': 'Billeteras Dama'
+    };
+
+    const folder = folderMap[catKey] || catKey;
+    const jsonUrl = `images/${folder}/index.json`;
+
+    fetch(jsonUrl)
+      .then(r => r.ok ? r.json() : [])
+      .catch(() => [])
+      .then(files => {
+        // Solo archivos de imagen
+        const imgs = files.filter(f => /\.(jpg|jpeg|png|webp|gif)$/i.test(f));
+
+        let html = '';
+        if (imgs.length === 0) {
+          // Sin fotos aún — mostrar placeholder elegante
+          html = `
+            <div class="no-products-msg">
+              <span style="font-size:3rem;opacity:0.3">${data.icon}</span>
+              <p>Próximamente</p>
+              <span>Este catálogo estará disponible muy pronto</span>
+            </div>`;
+        } else {
+          // Construir cards solo con las imágenes disponibles
+          imgs.forEach((filename, i) => {
+            const imgPath = `images/${folder}/${filename}`;
+            // Tomar nombre del producto del catálogo si existe, sino usar nombre del archivo
+            const prod = data.products[i] || {
+              name: data.label,
+              price: 'Consultar',
+              waText: `un producto de ${data.label}`,
+              sizes: data.products[0]?.sizes || null
+            };
+            const p = { ...prod, img: imgPath };
+            html += buildProductCard(p, data.isDama);
+          });
+          html += buildCtaCard(data.label, catKey, data.isDama);
+        }
+
+        gridEl.innerHTML = html;
+
+        // Stagger + tilt
+        setTimeout(() => {
+          prodView.querySelectorAll('.product-card').forEach((c, i) => {
+            c.style.animationDelay = `${i * 0.06}s`;
+          });
+          prodView.querySelectorAll('.product-card:not(.product-card--cta)').forEach(c => {
+            c.addEventListener('mousemove', e => {
+              const rect = c.getBoundingClientRect();
+              const x = (e.clientX - rect.left - rect.width / 2) / 22;
+              const y = (e.clientY - rect.top - rect.height / 2) / 22;
+              c.style.transform = `translateY(-5px) rotateY(${x}deg) rotateX(${-y}deg) scale(1.01)`;
+              c.style.transformStyle = 'preserve-3d';
+            });
+            c.addEventListener('mouseleave', () => { c.style.transform = ''; c.style.transformStyle = ''; });
+          });
+        }, 50);
       });
-      prodView.querySelectorAll('.product-card:not(.product-card--cta)').forEach(c => {
-        c.addEventListener('mousemove', e => {
-          const rect = c.getBoundingClientRect();
-          const x = (e.clientX - rect.left - rect.width / 2) / 22;
-          const y = (e.clientY - rect.top - rect.height / 2) / 22;
-          c.style.transform = `translateY(-5px) rotateY(${x}deg) rotateX(${-y}deg) scale(1.01)`;
-          c.style.transformStyle = 'preserve-3d';
-        });
-        c.addEventListener('mouseleave', () => { c.style.transform = ''; c.style.transformStyle = ''; });
-      });
-    }, 50);
   });
 });
 
@@ -1129,9 +1175,10 @@ document.addEventListener('click', e => {
     attributionControl: false,
   });
 
-  // Tile oscuro de Stadia (sin API key, gratis)
-  L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+  // Tile oscuro CartoDB — gratis, sin API key
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     maxZoom: 20,
+    subdomains: 'abcd',
   }).addTo(map);
 
   // Zoom control dorado en esquina inferior derecha

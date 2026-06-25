@@ -1564,3 +1564,83 @@ body.light-mode .logo-drop-text { color: #1A1814; }
   .cat-card h3 { font-size: 1.3rem; }
   .cat-link { font-size: 0.55rem; }
 }
+
+/* ===== SELECTOR DE TALLAS ===== */
+.size-selector {
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.size-label {
+  font-size: 0.55rem; letter-spacing: 3px;
+  color: var(--gray); text-transform: uppercase;
+}
+.size-options {
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
+}
+.size-opt {
+  min-width: 34px; height: 30px;
+  padding: 0 0.5rem;
+  background: var(--dark3);
+  border: 1px solid var(--gray2);
+  color: var(--gray);
+  font-family: var(--font-mono); font-size: 0.6rem;
+  letter-spacing: 1px; cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.size-opt:hover {
+  border-color: var(--gold);
+  color: var(--white);
+}
+.size-opt.selected {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--black);
+  font-weight: 700;
+}
+.dama-card .size-opt:hover  { border-color: var(--dama); color: var(--white); }
+.dama-card .size-opt.selected { background: var(--dama); border-color: var(--dama); }
+
+/* Shake cuando no seleccionó talla */
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-5px); }
+  40%     { transform: translateX(5px); }
+  60%     { transform: translateX(-4px); }
+  80%     { transform: translateX(4px); }
+}
+.size-options.shake {
+  animation: shake 0.4s ease;
+  outline: 1px solid rgba(245,158,11,0.5);
+}
+
+/* ===== LOADING DOTS ===== */
+.cat-loading {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0.5rem; padding: 4rem; width: 100%;
+}
+.cat-loading-dot {
+  width: 8px; height: 8px; background: var(--gold);
+  border-radius: 50%; opacity: 0.3;
+  animation: dotPulse 1.2s ease infinite;
+}
+.cat-loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.cat-loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dotPulse {
+  0%,100% { opacity: 0.3; transform: scale(1); }
+  50%     { opacity: 1;   transform: scale(1.4); }
+}
+
+/* ===== SIN PRODUCTOS ===== */
+.no-products-msg {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 0.8rem; padding: 4rem;
+  text-align: center; width: 100%;
+}
+.no-products-msg p {
+  font-family: var(--font-display); font-size: 1.8rem;
+  letter-spacing: 4px; color: var(--gray);
+}
+.no-products-msg span {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  letter-spacing: 2px; color: var(--gray2);
+}
