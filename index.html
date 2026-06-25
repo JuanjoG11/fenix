@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es" class="intro-loading">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FENIX CLOTHING — Catálogo Completo | Pereira, Colombia</title>
+  <meta name="description" content="Catálogo completo FENIX CLOTHING: gorras, relojes, gafas, camisetas, busos, jeans, perfumes y más. Envíos a todo Colombia. Paga con ADDI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Leaflet para mapa dorado -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+<!-- ===== CURSOR ===== -->
+<div class="cursor"></div>
+<div class="cursor-follower"></div>
+
+<!-- ===== LOGO DROP INTRO ===== -->
+<div class="logo-drop" id="logoDrop">
+  <div class="logo-drop-inner">
+    <img src="images/logo.jpg" alt="FENIX" class="logo-drop-img" />
+    <span class="logo-drop-text">FENIX</span>
+    <span class="logo-drop-sub">CLOTHING</span>
+    <div class="logo-drop-line"></div>
+  </div>
+  <button class="intro-mute" id="introMute" title="Silenciar">
+    <svg id="muteIconOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" stroke-linecap="round"/>
+    </svg>
+    <svg id="muteIconOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16" style="display:none">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="23" y1="9" x2="17" y2="15" stroke-linecap="round"/>
+      <line x1="17" y1="9" x2="23" y2="15" stroke-linecap="round"/>
+    </svg>
+  </button>
+</div>
+
+<!-- ===== PARTÍCULAS ===== -->
+<canvas id="particles"></canvas>
+
+<!-- ===== NAV ===== -->
+<nav id="navbar">
+  <div class="nav-logo">
+    <span class="logo-text">FENIX<span class="gold">.</span></span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#inicio">Inicio</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#catalogo">Catálogo</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <a href="https://wa.me/573122281686" target="_blank" class="nav-cta">WA →</a>
+  <!-- Theme toggle -->
+  <button class="theme-toggle" id="themeToggle" title="Cambiar modo">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path stroke-linecap="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3" stroke-linecap="round"/><line x1="12" y1="21" x2="12" y2="23" stroke-linecap="round"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke-linecap="round"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke-linecap="round"/><line x1="1" y1="12" x2="3" y2="12" stroke-linecap="round"/><line x1="21" y1="12" x2="23" y2="12" stroke-linecap="round"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke-linecap="round"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke-linecap="round"/></svg>
+  </button>
+  <button class="hamburger" id="hamburger">&#9776;</button>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section id="inicio" class="hero">
+  <div class="hero-parallax-bg"></div>
+
+  <div class="hero-center">
+    <img src="images/logo.jpg" alt="FENIX" class="hero-logo reveal" />
+    <h1 class="hero-title">
+      <span class="line line1">FENIX</span>
+      <span class="line line2">CLOTHING</span>
+    </h1>
+    <p class="hero-location mono reveal">Pereira, Colombia</p>
+    <div class="hero-btns reveal">
+      <a href="#catalogo" class="btn-gold">Ver Catálogo</a>
+      <a href="https://wa.me/573122281686" target="_blank" class="btn-ghost">WhatsApp →</a>
+    </div>
+  </div>
+
+  <div class="hero-number mono">001</div>
+</section>
+
+<!-- ===== TICKER ===== -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>500+ CLIENTES FELICES</span><span>ENVÍOS EN 24 HORAS</span>
+    <span>ADDI SIN TARJETA</span><span>17 CATEGORÍAS</span>
+    <span>GORRAS EXCLUSIVAS</span><span>RELOJES PREMIUM</span>
+    <span>DESDE PEREIRA PA' TODO COLOMBIA</span><span>GAFAS DE MODA</span>
+    <span>500+ CLIENTES FELICES</span><span>ENVÍOS EN 24 HORAS</span>
+    <span>ADDI SIN TARJETA</span><span>17 CATEGORÍAS</span>
+    <span>GORRAS EXCLUSIVAS</span><span>RELOJES PREMIUM</span>
+    <span>DESDE PEREIRA PA' TODO COLOMBIA</span><span>GAFAS DE MODA</span>
+  </div>
+</div>
+
+<!-- ===== NOSOTROS ===== -->
+<section id="nosotros" class="about">
+  <div class="about-label mono reveal">002 — Nosotros</div>
+  <div class="about-grid">
+    <div class="about-text reveal-left">
+      <h2>Como el Fénix,<br/><em>renacemos</em><br/>cada día</h2>
+      <p>En FENIX CLOTHING el estilo es una actitud. Llevamos moda y calidad a cada rincón del país desde Pereira — prendas y accesorios que hacen que cada look diga todo sin decir nada.</p>
+      <ul class="about-list">
+        <li>Productos 100% seleccionados</li>
+        <li>Envíos seguros a todo Colombia</li>
+        <li>Pagos flexibles con ADDI</li>
+        <li>Atención personalizada por WhatsApp</li>
+      </ul>
+    </div>
+    <div class="about-stats reveal-right">
+      <div class="stat-card">
+        <span class="stat-num" data-target="500">0</span><span class="gold">+</span>
+        <p>Clientes felices</p>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" data-target="24">0</span>
+        <p>Categorías</p>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" data-target="100">0</span><span class="gold">%</span>
+        <p>Envíos nacionales</p>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num" data-target="24">0</span><span class="gold">/7</span>
+        <p>Soporte activo</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CATÁLOGO ===== -->
+<section id="catalogo" class="catalog">
+  <div class="catalog-header">
+    <span class="mono reveal">003 — Catálogo</span>
+    <h2 class="reveal">Todo es más<br/><span class="gold">exclusivo con FENIX</span></h2>
+  </div>
+
+  <!-- BÚSQUEDA -->
+  <div class="search-wrap reveal">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg>
+      <input type="text" id="searchInput" placeholder="Buscar producto..." autocomplete="off" />
+      <button class="search-clear" id="searchClear">✕</button>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <!-- LO MÁS PEDIDO -->
+  <div class="hot-section reveal">
+    <div class="hot-header">
+      <span class="mono">Lo más pedido</span>
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        <span id="viewerCount">8</span> personas viendo ahora
+      </div>
+    </div>
+    <div class="hot-grid" id="hotGrid"></div>
+  </div>
+
+  <!-- TABS CABALLERO / DAMA -->
+  <div class="catalog-tabs reveal">
+    <button class="tab-btn active" data-tab="caballero">
+      <span class="tab-icon">♟</span> Caballero
+    </button>
+    <button class="tab-btn" data-tab="dama">
+      <span class="tab-icon">♡</span> Dama
+    </button>
+  </div>
+
+  <!-- ===================== CABALLERO ===================== -->
+  <div class="tab-panel active" id="tab-caballero">
+
+    <!-- VISTA: CATEGORÍAS (por defecto) -->
+    <div class="cat-view" id="cat-view-caballero">
+      <div class="categories-grid">
+
+        <div class="cat-card reveal" style="--delay:0.03s" data-cat="gorras" data-panel="caballero">
+          <div class="cat-num mono">01</div>
+          <div class="cat-icon">🧢</div>
+          <h3>Gorras</h3>
+          <p>Snapbacks, dad hats y trucker caps. El remate perfecto para cualquier outfit.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.06s" data-cat="relojes" data-panel="caballero">
+          <div class="cat-num mono">02</div>
+          <div class="cat-icon">⌚</div>
+          <h3>Relojes</h3>
+          <p>Diseños modernos para marcar cada momento con clase.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.09s" data-cat="gafas" data-panel="caballero">
+          <div class="cat-num mono">03</div>
+          <div class="cat-icon">🕶️</div>
+          <h3>Gafas</h3>
+          <p>Lentes con estilo y protección UV para cada temporada.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.12s" data-cat="camisetas" data-panel="caballero">
+          <div class="cat-num mono">04</div>
+          <div class="cat-icon">👕</div>
+          <h3>Camisetas</h3>
+          <p>Gama alta, tela fría y urbanas. Calidad que se siente desde el primer uso.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.15s" data-cat="busos" data-panel="caballero">
+          <div class="cat-num mono">05</div>
+          <div class="cat-icon">🧥</div>
+          <h3>Busos</h3>
+          <p>De capota y cuello redondo. Comodidad con actitud para el frío y el estilo.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.18s" data-cat="canguros" data-panel="caballero">
+          <div class="cat-num mono">06</div>
+          <div class="cat-icon">🦘</div>
+          <h3>Canguros</h3>
+          <p>Estilo urbano con bolsillo canguro. Frescos y cómodos para el día a día.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.21s" data-cat="jeans" data-panel="caballero">
+          <div class="cat-num mono">07</div>
+          <div class="cat-icon">👖</div>
+          <h3>Jeans</h3>
+          <p>Cortes modernos que se adaptan a cualquier estilo. Del casual al premium.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.24s" data-cat="mochos" data-panel="caballero">
+          <div class="cat-num mono">08</div>
+          <div class="cat-icon">🩳</div>
+          <h3>Mochos</h3>
+          <p>Bermudas con diseño propio para el clima y el flow colombiano.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.27s" data-cat="pantalonetas" data-panel="caballero">
+          <div class="cat-num mono">09</div>
+          <div class="cat-icon">🏃</div>
+          <h3>Pantalonetas</h3>
+          <p>Para el gym, la calle o el parche. Ligeras y con estilo.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.30s" data-cat="polos" data-panel="caballero">
+          <div class="cat-num mono">10</div>
+          <div class="cat-icon">👔</div>
+          <h3>Polos</h3>
+          <p>Elegancia casual en cada costura. Del trabajo a la calle sin esfuerzo.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.33s" data-cat="conjuntos" data-panel="caballero">
+          <div class="cat-num mono">11</div>
+          <div class="cat-icon">🤝</div>
+          <h3>Conjuntos</h3>
+          <p>Todo coordinado para que solo pienses en salir a brillar.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.36s" data-cat="correas" data-panel="caballero">
+          <div class="cat-num mono">12</div>
+          <div class="cat-icon">🪡</div>
+          <h3>Correas</h3>
+          <p>El detalle que completa el look. Cuero y calidad en cada hebilla.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.39s" data-cat="morrales" data-panel="caballero">
+          <div class="cat-num mono">13</div>
+          <div class="cat-icon">🎒</div>
+          <h3>Morrales</h3>
+          <p>Resistentes, cómodos y con diseño. Para el campus o el viaje.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.42s" data-cat="carrieles" data-panel="caballero">
+          <div class="cat-num mono">14</div>
+          <div class="cat-icon">🧳</div>
+          <h3>Carrieles</h3>
+          <p>El accesorio paisa por excelencia. Tradición con estilo moderno.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.45s" data-cat="pulseras" data-panel="caballero">
+          <div class="cat-num mono">15</div>
+          <div class="cat-icon">💎</div>
+          <h3>Pulseras</h3>
+          <p>Detalles que hablan. Diseños únicos para tu muñeca.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.48s" data-cat="billeteras" data-panel="caballero">
+          <div class="cat-num mono">16</div>
+          <div class="cat-icon">👛</div>
+          <h3>Billeteras</h3>
+          <p>Compactas y elegantes. Organiza tu vida con clase.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+        <div class="cat-card reveal" style="--delay:0.51s" data-cat="perfumes" data-panel="caballero">
+          <div class="cat-num mono">17</div>
+          <div class="cat-icon">🌿</div>
+          <h3>Perfumes</h3>
+          <p>Fragancias intensas y duraderas que dejan huella donde vayas.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+
+      </div>
+    </div><!-- /cat-view-caballero -->
+
+    <!-- VISTA: PRODUCTOS DE CATEGORÍA -->
+    <div class="prod-view hidden" id="prod-view-caballero">
+      <div class="prod-view-header">
+        <button class="back-btn" data-panel="caballero">← Volver</button>
+        <div class="prod-view-title">
+          <span class="prod-view-icon" id="prod-icon-caballero"></span>
+          <h3 id="prod-title-caballero"></h3>
+        </div>
+      </div>
+
+      <div class="products-grid" id="products-caballero"></div>
+    </div>
+
+  </div><!-- /tab-caballero -->
+
+
+  <!-- ===================== DAMA ===================== -->
+  <div class="tab-panel" id="tab-dama">
+
+    <!-- VISTA: CATEGORÍAS -->
+    <div class="cat-view" id="cat-view-dama">
+      <div class="categories-grid dama-grid">
+
+        <div class="cat-card dama-cat reveal" style="--delay:0.03s" data-cat="relojes-dama" data-panel="dama">
+          <div class="cat-num mono">01</div>
+          <div class="cat-icon">⌚</div>
+          <h3>Relojes</h3>
+          <p>Elegancia en cada segundo. Diseños delicados y modernos para ella.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+
+        <div class="cat-card dama-cat reveal" style="--delay:0.06s" data-cat="gafas-dama" data-panel="dama">
+          <div class="cat-num mono">02</div>
+          <div class="cat-icon">🕶️</div>
+          <h3>Gafas</h3>
+          <p>Lentes que definen el estilo femenino con actitud y protección.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+
+        <div class="cat-card dama-cat reveal" style="--delay:0.09s" data-cat="busos-dama" data-panel="dama">
+          <div class="cat-num mono">03</div>
+          <div class="cat-icon">🧥</div>
+          <h3>Busos</h3>
+          <p>Comodidad y moda femenina en cada prenda. Para el frío con estilo.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+
+        <div class="cat-card dama-cat reveal" style="--delay:0.12s" data-cat="bolsos" data-panel="dama">
+          <div class="cat-num mono">04</div>
+          <div class="cat-icon">👜</div>
+          <h3>Bolsos</h3>
+          <p>Del mini al tote. Cada bolso es una declaración de estilo.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+
+        <div class="cat-card dama-cat reveal" style="--delay:0.15s" data-cat="correas-dama" data-panel="dama">
+          <div class="cat-num mono">05</div>
+          <div class="cat-icon">🪡</div>
+          <h3>Correas</h3>
+          <p>Cinturones que dan forma y carácter a cualquier outfit femenino.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+
+        <div class="cat-card dama-cat reveal" style="--delay:0.18s" data-cat="perfumes-dama" data-panel="dama">
+          <div class="cat-num mono">06</div>
+          <div class="cat-icon">🌸</div>
+          <h3>Perfumes</h3>
+          <p>Fragancias femeninas irresistibles. Dulces, florales o intensas.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+
+        <div class="cat-card dama-cat reveal" style="--delay:0.21s" data-cat="billeteras-dama" data-panel="dama">
+          <div class="cat-num mono">07</div>
+          <div class="cat-icon">👛</div>
+          <h3>Billeteras</h3>
+          <p>Prácticas y con diseño. Organiza tu mundo con elegancia.</p>
+          <span class="cat-link">Ver productos →</span>
+        </div>
+
+      </div>
+    </div><!-- /cat-view-dama -->
+
+    <!-- VISTA: PRODUCTOS DE CATEGORÍA -->
+    <div class="prod-view hidden" id="prod-view-dama">
+      <div class="prod-view-header">
+        <button class="back-btn" data-panel="dama">← Volver</button>
+        <div class="prod-view-title">
+          <span class="prod-view-icon" id="prod-icon-dama"></span>
+          <h3 id="prod-title-dama"></h3>
+        </div>
+      </div>
+
+      <div class="products-grid" id="products-dama"></div>
+    </div>
+
+  </div><!-- /tab-dama -->
+
+</section>
+
+<!-- ===== ADDI BANNER ===== -->
+<section class="addi-section reveal">
+  <div class="addi-inner">
+    <div class="addi-left">
+      <div class="addi-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36"><rect x="2" y="5" width="20" height="14" rx="2"/><path stroke-linecap="round" d="M2 10h20"/></svg>
+      </div>
+      <div>
+        <h3>Paga con <span class="gold">ADDI</span></h3>
+        <p>Estrena ya y paga después. Sin tarjeta de crédito, sin complicaciones.</p>
+      </div>
+    </div>
+    <a href="https://wa.me/573122281686?text=Hola!%20quiero%20pagar%20con%20ADDI" target="_blank" class="btn-gold">Preguntar por ADDI</a>
+  </div>
+</section>
+
+<!-- ===== CONTACTO ===== -->
+<section id="contacto" class="contact">
+  <span class="contact-label mono reveal">004 — Contacto</span>
+  <h2 class="reveal">Escríbenos <span class="gold">ahora</span></h2>
+  <div class="contact-grid">
+    <div class="contact-card reveal" style="--delay:0.1s">
+      <div class="contact-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="26" height="26"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" stroke-linecap="round"/></svg>
+      </div>
+      <h4>Ubicación</h4>
+      <p>Pereira, Colombia</p>
+    </div>
+    <div class="contact-card reveal" style="--delay:0.2s">
+      <div class="contact-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </div>
+      <h4>WhatsApp</h4>
+      <a href="https://wa.me/573122281686" target="_blank">+57 312 228 1686</a>
+    </div>
+    <div class="contact-card reveal" style="--delay:0.3s">
+      <div class="contact-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="26" height="26"><rect x="1" y="3" width="15" height="13" rx="1" stroke-linecap="round" stroke-linejoin="round"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      </div>
+      <h4>Envíos</h4>
+      <p>A todo Colombia</p>
+    </div>
+  </div>
+  <div class="wa-cta reveal" style="display:none">
+    <a href="https://wa.me/573122281686" target="_blank" class="btn-wa">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Escríbenos al WhatsApp
+    </a>
+  </div>
+
+  <!-- MAPA -->
+  <div class="contact-map reveal">
+    <div class="contact-map-label mono">Encuéntranos aquí</div>
+    <div class="map-wrap" id="fenixMap">
+      <!-- Mapa custom con estilo dorado -->
+    </div>
+    <a class="map-directions"
+       href="https://www.google.com/maps/search/Villa+Verde+Pereira+Risaralda"
+       target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      Ver en Google Maps
+    </a>
+  </div>
+
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-logo"><span class="gold">FENIX</span> CLOTHING</div>
+  <p>Calidad y estilo · Pereira, Colombia</p>
+  <p class="footer-small">© 2025 FENIX CLOTHING</p>
+</footer>
+
+<!-- ===== BOTONES FLOTANTES ===== -->
+<div class="float-btns">
+  <!-- Carrito flotante -->
+  <button class="float-cart" id="cartBtn" title="Ver carrito">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="24" height="24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+      <line x1="3" y1="6" x2="21" y2="6" stroke-linecap="round"/>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M16 10a4 4 0 01-8 0"/>
+    </svg>
+    <span class="float-cart-count" id="cartCount">0</span>
+  </button>
+  <!-- WhatsApp flotante -->
+  <a href="https://wa.me/573122281686" target="_blank" class="wa-float" title="Chatea con nosotros">
+    <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  </a>
+</div>
+
+<!-- ===== LIGHTBOX ===== -->
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-backdrop" id="lightboxBackdrop"></div>
+  <div class="lightbox-content">
+    <button class="lightbox-close" id="lightboxClose">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+        <line x1="18" y1="6" x2="6" y2="18" stroke-linecap="round"/>
+        <line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="lightbox-img-wrap">
+      <img id="lightboxImg" src="" alt="" />
+    </div>
+    <div class="lightbox-info">
+      <h3 id="lightboxName"></h3>
+      <span id="lightboxPrice"></span>
+      <a id="lightboxWa" href="#" target="_blank" class="lightbox-wa-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Pedir ahora
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ===== CARRITO ===== -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-panel" id="cartPanel">
+  <div class="cart-header">
+    <h3 class="cart-title">Tu pedido</h3>
+    <button class="cart-close" id="cartClose">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+        <line x1="18" y1="6" x2="6" y2="18" stroke-linecap="round"/>
+        <line x1="6" y1="6" x2="18" y2="18" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="cart-body" id="cartBody">
+    <div class="cart-empty" id="cartEmpty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" width="56" height="56" opacity="0.25">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6" stroke-linecap="round"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16 10a4 4 0 01-8 0"/>
+      </svg>
+      <p>Tu carrito está vacío</p>
+      <span>Agregá productos desde el catálogo</span>
+    </div>
+    <ul class="cart-list" id="cartList"></ul>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total-row">
+      <span class="cart-total-label">Total</span>
+      <span class="cart-total-val" id="cartTotal">$0</span>
+    </div>
+    <a class="cart-wa-btn" id="cartWaBtn" href="#" target="_blank">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Pedir por WhatsApp
+    </a>
+    <button class="cart-clear-btn" id="cartClear">Vaciar carrito</button>
+  </div>
+</aside>
+
+<script src="script.js"></script>
+</body>
+</html>
