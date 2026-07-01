@@ -201,12 +201,17 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-/* ===================================================================
-   ===== CATALOG DATA — add/edit products here =====
-   Each key matches the data-cat attribute on .cat-card
-   Products: { name, price, img, badge?, waText }
-=================================================================== */
-const CATALOG = {
+/* ===================================================
+   SUPABASE — configuración
+=================================================== */
+const SUPA_URL = 'https://mecicdtcofqdleoplqed.supabase.co';
+const SUPA_KEY = 'sb_publishable_7Nh_oq9MDKCOxkP8PDbQyg_s7JeDE-4';
+const sbClient = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+/* ===================================================
+   CATALOG DATA — fallback si Supabase no tiene datos
+=================================================== */
+const DEFAULT_CATALOG = {
   /* -------- CABALLERO -------- */
   gorras: {
     label: 'Gorras', icon: '🧢', isDama: false,
@@ -393,9 +398,12 @@ const CATALOG = {
       { name: 'Billetera Color',    price: '$32.000', img: 'images/Billeteras Dama/billetera_dama2.jpg', waText: 'la billetera dama de color' },
     ]
   }
-};
+}; // end DEFAULT_CATALOG
 
-/* ===== BUILD PRODUCT CARD HTML ===== */
+// Si CATALOG aún no cargó cuando se use, fallback a DEFAULT
+function getCatalog() { return CATALOG || DEFAULT_CATALOG; }
+
+
 function buildProductCard(p, isDama) {
   const accentClass = isDama ? 'dama-card' : '';
   const badgeHtml = p.badge ? `<div class="product-badge${isDama ? ' badge-dama' : ''}">${p.badge}</div>` : '';
@@ -407,13 +415,13 @@ function buildProductCard(p, isDama) {
       <div class="product-img-wrap">
         <img src="${p.img}" alt="${p.name}" class="product-img"
              onerror="this.parentElement.classList.add('no-img')">
-        <div class="product-img-fallback">${CATALOG[currentCatKey]?.icon || '📦'}</div>
+        <div class="product-img-fallback">${getCatalog()[currentCatKey]?.icon || '📦'}</div>
         ${badgeHtml}
         <button class="add-to-cart-btn"
           data-name="${p.name}"
           data-price="${p.price}"
           data-img="${p.img}"
-          data-cat="${CATALOG[currentCatKey]?.label || ''}"
+          data-cat="${getCatalog()[currentCatKey]?.label || ''}"
           data-isdama="${isDama}">
           ${cartIcon} Agregar
         </button>
@@ -437,7 +445,7 @@ function buildCtaCard(label, catKey, isDama) {
   return `
     <div class="${cardClass} fade-in">
       <div class="product-cta-inner">
-        <span class="product-cta-icon">${CATALOG[catKey]?.icon || '📦'}</span>
+        <span class="product-cta-icon">${getCatalog()[catKey]?.icon || '📦'}</span>
         <p>¿Querés ver más ${label.toLowerCase()}?</p>
         <a href="${waUrl}" target="_blank" class="btn-gold" ${btnStyle}>Ver todos →</a>
       </div>
@@ -468,7 +476,7 @@ document.querySelectorAll('.cat-card').forEach(card => {
     const catKey = card.dataset.cat;
     const panel  = card.dataset.panel;
     currentCatKey = catKey;
-    const data = CATALOG[catKey];
+    const data = getCatalog()[catKey];
     if (!data) return;
 
     const catView  = document.getElementById('cat-view-' + panel);
@@ -483,57 +491,39 @@ document.querySelectorAll('.cat-card').forEach(card => {
     if (data.isDama) backBtn.classList.add('dama-back');
     else backBtn.classList.remove('dama-back');
 
-    // Mostrar loading
+    // Loading
     gridEl.innerHTML = `<div class="cat-loading"><span class="cat-loading-dot"></span><span class="cat-loading-dot"></span><span class="cat-loading-dot"></span></div>`;
     catView.classList.add('hidden');
     prodView.classList.remove('hidden');
     document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    // Leer index.json de la carpeta
-    const folderMap = {
-      gorras: 'Gorras', relojes: 'Relojes', gafas: 'Gafas',
-      camisetas: 'Camisetas', busos: 'Busos', canguros: 'Canguros',
-      jeans: 'Jeans', mochos: 'Mochos', pantalonetas: 'Pantalonetas',
-      polos: 'Polos', conjuntos: 'Conjuntos', correas: 'Correas',
-      morrales: 'Morrales', carrieles: 'Carrieles', pulseras: 'Pulseras',
-      billeteras: 'Billeteras', perfumes: 'Perfumes',
-      'relojes-dama': 'Relojes Dama', 'gafas-dama': 'Gafas Dama',
-      'busos-dama': 'Busos Dama', bolsos: 'Bolsos',
-      'correas-dama': 'Correas Dama', 'perfumes-dama': 'Perfumes Dama',
-      'billeteras-dama': 'Billeteras Dama'
-    };
-
-    const folder = folderMap[catKey] || catKey;
-    const jsonUrl = `images/${folder}/index.json`;
-
-    fetch(jsonUrl)
-      .then(r => r.ok ? r.json() : [])
-      .catch(() => [])
-      .then(files => {
-        // Solo archivos de imagen
-        const imgs = files.filter(f => /\.(jpg|jpeg|png|webp|gif)$/i.test(f));
-
+    // Cargar desde Supabase
+    sbClient
+      .from('productos')
+      .select('*')
+      .eq('categoria', catKey)
+      .eq('activo', true)
+      .order('created_at', { ascending: true })
+      .then(({ data: rows, error }) => {
         let html = '';
-        if (imgs.length === 0) {
-          // Sin fotos aún — mostrar placeholder elegante
-          html = `
-            <div class="no-products-msg">
-              <span style="font-size:3rem;opacity:0.3">${data.icon}</span>
-              <p>Próximamente</p>
-              <span>Este catálogo estará disponible muy pronto</span>
-            </div>`;
+
+        if (error || !rows || rows.length === 0) {
+          // Sin productos en Supabase → mostrar "Próximamente"
+          html = `<div class="no-products-msg">
+            <span style="font-size:3rem;opacity:0.3">${data.icon}</span>
+            <p>Próximamente</p>
+            <span>Este catálogo estará disponible muy pronto</span>
+          </div>`;
         } else {
-          // Construir cards solo con las imágenes disponibles
-          imgs.forEach((filename, i) => {
-            const imgPath = `images/${folder}/${filename}`;
-            // Tomar nombre del producto del catálogo si existe, sino usar nombre del archivo
-            const prod = data.products[i] || {
-              name: data.label,
-              price: 'Consultar',
-              waText: `un producto de ${data.label}`,
-              sizes: data.products[0]?.sizes || null
+          rows.forEach(row => {
+            const p = {
+              name:    row.nombre,
+              price:   row.precio,
+              img:     row.imagen_url || '',
+              badge:   row.badge,
+              waText:  row.wa_text || row.nombre.toLowerCase(),
+              sizes:   row.tallas || null,
             };
-            const p = { ...prod, img: imgPath };
             html += buildProductCard(p, data.isDama);
           });
           html += buildCtaCard(data.label, catKey, data.isDama);
@@ -554,7 +544,10 @@ document.querySelectorAll('.cat-card').forEach(card => {
               c.style.transform = `translateY(-5px) rotateY(${x}deg) rotateX(${-y}deg) scale(1.01)`;
               c.style.transformStyle = 'preserve-3d';
             });
-            c.addEventListener('mouseleave', () => { c.style.transform = ''; c.style.transformStyle = ''; });
+            c.addEventListener('mouseleave', () => {
+              c.style.transform = '';
+              c.style.transformStyle = '';
+            });
           });
         }, 50);
       });
@@ -989,62 +982,58 @@ document.addEventListener('click', e => {
 })();
 
 /* ==============================================
-   FEATURE 1 — BÚSQUEDA EN TIEMPO REAL
+   FEATURE 1 — BÚSQUEDA EN TIEMPO REAL (Supabase)
 ============================================== */
 (function() {
-  const input   = document.getElementById('searchInput');
-  const results = document.getElementById('searchResults');
+  const input    = document.getElementById('searchInput');
+  const results  = document.getElementById('searchResults');
   const clearBtn = document.getElementById('searchClear');
   if (!input) return;
 
-  // Flatten all products from CATALOG into searchable list
-  function getAllProducts() {
-    const list = [];
-    Object.entries(CATALOG).forEach(([key, cat]) => {
-      cat.products.forEach(p => {
-        list.push({ ...p, catKey: key, catLabel: cat.label, isDama: cat.isDama, icon: cat.icon });
-      });
-    });
-    return list;
-  }
+  let searchTimer = null;
 
   input.addEventListener('input', () => {
-    const q = input.value.trim().toLowerCase();
+    const q = input.value.trim();
     clearBtn.classList.toggle('visible', q.length > 0);
     if (q.length < 2) { results.classList.remove('open'); return; }
 
-    const hits = getAllProducts().filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.catLabel.toLowerCase().includes(q)
-    ).slice(0, 8);
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(async () => {
+      const { data: hits } = await sbClient
+        .from('productos')
+        .select('*')
+        .ilike('nombre', `%${q}%`)
+        .eq('activo', true)
+        .limit(8);
 
-    if (hits.length === 0) {
-      results.innerHTML = `<div class="search-no-results">Sin resultados para "${q}"</div>`;
-    } else {
-      results.innerHTML = hits.map(p => `
-        <div class="search-result-item"
-          data-catkey="${p.catKey}" data-isdama="${p.isDama}"
-          data-img="${p.img}" data-name="${p.name}" data-price="${p.price}" data-watext="${p.waText}">
-          <img class="search-result-img" src="${p.img}" alt="${p.name}" onerror="this.style.opacity=0.2">
-          <div class="search-result-info">
-            <span class="search-result-name">${p.name}</span>
-            <span class="search-result-cat">${p.catLabel}</span>
-          </div>
-          <span class="search-result-price">${p.price}</span>
-        </div>
-      `).join('');
-    }
-    results.classList.add('open');
+      if (!hits || hits.length === 0) {
+        results.innerHTML = `<div class="search-no-results">Sin resultados para "${q}"</div>`;
+      } else {
+        results.innerHTML = hits.map(row => `
+          <div class="search-result-item"
+            data-img="${row.imagen_url || ''}"
+            data-name="${row.nombre}"
+            data-price="${row.precio}"
+            data-watext="${row.wa_text || row.nombre}">
+            <img class="search-result-img" src="${row.imagen_url || ''}" alt="${row.nombre}" onerror="this.style.opacity=0.2">
+            <div class="search-result-info">
+              <span class="search-result-name">${row.nombre}</span>
+              <span class="search-result-cat">${row.categoria}</span>
+            </div>
+            <span class="search-result-price">${row.precio}</span>
+          </div>`).join('');
 
-    // Click on result → open lightbox
-    results.querySelectorAll('.search-result-item').forEach(item => {
-      item.addEventListener('click', () => {
-        openLightbox(item.dataset.img, item.dataset.name, item.dataset.price, item.dataset.watext);
-        results.classList.remove('open');
-        input.value = '';
-        clearBtn.classList.remove('visible');
-      });
-    });
+        results.querySelectorAll('.search-result-item').forEach(item => {
+          item.addEventListener('click', () => {
+            openLightbox(item.dataset.img, item.dataset.name, item.dataset.price, item.dataset.watext);
+            results.classList.remove('open');
+            input.value = '';
+            clearBtn.classList.remove('visible');
+          });
+        });
+      }
+      results.classList.add('open');
+    }, 300);
   });
 
   clearBtn.addEventListener('click', () => {
@@ -1054,50 +1043,50 @@ document.addEventListener('click', e => {
     input.focus();
   });
 
-  // Close on outside click
   document.addEventListener('click', e => {
     if (!e.target.closest('.search-wrap')) results.classList.remove('open');
   });
 })();
 
 /* ==============================================
-   FEATURE 2 — LO MÁS PEDIDO
+   FEATURE 2 — LO MÁS PEDIDO (desde Supabase)
 ============================================== */
 (function() {
-  const HOT = [
-    { catKey: 'gorras',    idx: 3 },  // Gorra Premium
-    { catKey: 'relojes',   idx: 0 },  // Reloj Urbano
-    { catKey: 'jeans',     idx: 1 },  // Jean Baggy
-    { catKey: 'camisetas', idx: 0 },  // Camiseta Oversize
-    { catKey: 'busos',     idx: 0 },  // Buso Hoodie
-  ];
-
   const grid = document.getElementById('hotGrid');
   if (!grid) return;
 
-  grid.innerHTML = HOT.map(({ catKey, idx }) => {
-    const cat = CATALOG[catKey];
-    if (!cat) return '';
-    const p = cat.products[idx];
-    if (!p) return '';
-    return `
-      <div class="hot-card fade-in"
-        data-img="${p.img}" data-name="${p.name}" data-price="${p.price}" data-watext="${p.waText}">
-        <div class="hot-badge">TOP</div>
-        <img class="hot-card-img" src="${p.img}" alt="${p.name}" onerror="this.style.opacity=0.15">
-        <div class="hot-card-body">
-          <span class="hot-card-name">${p.name}</span>
-          <span class="hot-card-price">${p.price}</span>
-        </div>
-      </div>`;
-  }).join('');
+  sbClient
+    .from('productos')
+    .select('*')
+    .eq('activo', true)
+    .limit(5)
+    .order('created_at', { ascending: false })
+    .then(({ data: rows }) => {
+      if (!rows || rows.length === 0) {
+        grid.innerHTML = '<p style="font-family:var(--font-mono);font-size:0.6rem;color:var(--gray);letter-spacing:2px;padding:1rem;">Próximamente</p>';
+        return;
+      }
+      grid.innerHTML = rows.map(row => `
+        <div class="hot-card fade-in"
+          data-img="${row.imagen_url || ''}"
+          data-name="${row.nombre}"
+          data-price="${row.precio}"
+          data-watext="${row.wa_text || row.nombre}">
+          <div class="hot-badge">TOP</div>
+          <img class="hot-card-img" src="${row.imagen_url || ''}" alt="${row.nombre}"
+               onerror="this.style.opacity=0.15">
+          <div class="hot-card-body">
+            <span class="hot-card-name">${row.nombre}</span>
+            <span class="hot-card-price">${row.precio}</span>
+          </div>
+        </div>`).join('');
 
-  // Click → lightbox
-  grid.querySelectorAll('.hot-card').forEach(card => {
-    card.addEventListener('click', () => {
-      openLightbox(card.dataset.img, card.dataset.name, card.dataset.price, card.dataset.watext);
+      grid.querySelectorAll('.hot-card').forEach(card => {
+        card.addEventListener('click', () => {
+          openLightbox(card.dataset.img, card.dataset.name, card.dataset.price, card.dataset.watext);
+        });
+      });
     });
-  });
 })();
 
 /* ==============================================
@@ -1237,3 +1226,5 @@ document.addEventListener('click', e => {
   container.style.position = 'relative';
   container.appendChild(overlay);
 })();
+
+/* ===== BUILD PRODUCT CARD HTML ===== */

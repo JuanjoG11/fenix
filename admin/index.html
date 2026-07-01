@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FENIX Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="admin.css" />
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">FENIX<span>.</span></div>
+    <p class="login-sub">Panel de administración</p>
+    <input type="password" id="loginPass" placeholder="Contraseña" class="login-input"/>
+    <button class="login-btn" id="loginBtn">Entrar</button>
+    <p class="login-error" id="loginError"></p>
+  </div>
+</div>
+
+<!-- PANEL -->
+<div class="admin-wrap hidden" id="adminWrap">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">FENIX<span>.</span></div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-view="productos">Productos</button>
+      <button class="nav-item" data-view="categorias">Categorías</button>
+      <button class="nav-item" data-view="export">Exportar JSON</button>
+    </nav>
+    <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="admin-main">
+
+    <!-- ===== VISTA: PRODUCTOS ===== -->
+    <div class="view active" id="view-productos">
+      <div class="view-header">
+        <h1>Productos</h1>
+        <button class="btn-primary" id="openAddProduct">+ Agregar producto</button>
+      </div>
+
+      <!-- Filtro categoría -->
+      <div class="filter-bar">
+        <select id="filterCat" class="filter-select">
+          <option value="">Todas las categorías</option>
+        </select>
+        <input type="text" id="filterSearch" placeholder="Buscar producto..." class="filter-input"/>
+      </div>
+
+      <div class="product-table-wrap">
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th>Foto</th>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Tallas</th>
+              <th>Badge</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody"></tbody>
+        </table>
+        <div class="table-empty" id="tableEmpty">No hay productos aún</div>
+      </div>
+    </div>
+
+    <!-- ===== VISTA: CATEGORÍAS ===== -->
+    <div class="view" id="view-categorias">
+      <div class="view-header">
+        <h1>Categorías</h1>
+      </div>
+      <div class="cat-grid" id="catGrid"></div>
+    </div>
+
+    <!-- ===== VISTA: EXPORTAR ===== -->
+    <div class="view" id="view-export">
+      <div class="view-header"><h1>Exportar catálogo</h1></div>
+      <div class="export-box">
+        <p>Descargá el archivo <code>catalogo.json</code> y reemplazalo en la carpeta raíz del proyecto. La web lo detecta automáticamente.</p>
+        <button class="btn-primary" id="exportBtn">Descargar catalogo.json</button>
+        <div class="export-preview">
+          <pre id="exportPreview"></pre>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL: AGREGAR / EDITAR PRODUCTO -->
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Agregar producto</h2>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" id="pName" placeholder="Ej: Gorra Snapback"/>
+        </div>
+        <div class="form-group">
+          <label>Precio *</label>
+          <input type="text" id="pPrice" placeholder="Ej: $45.000"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Categoría *</label>
+          <select id="pCat"></select>
+        </div>
+        <div class="form-group">
+          <label>Badge</label>
+          <select id="pBadge">
+            <option value="">Sin badge</option>
+            <option value="NUEVO">NUEVO</option>
+            <option value="TOP">TOP</option>
+            <option value="HOT">HOT</option>
+            <option value="EXCLUSIVO">EXCLUSIVO</option>
+            <option value="COMBO">COMBO</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Tallas disponibles</label>
+        <div class="sizes-check">
+          <label><input type="checkbox" value="XS"/> XS</label>
+          <label><input type="checkbox" value="S"/> S</label>
+          <label><input type="checkbox" value="M"/> M</label>
+          <label><input type="checkbox" value="L"/> L</label>
+          <label><input type="checkbox" value="XL"/> XL</label>
+          <label><input type="checkbox" value="XXL"/> XXL</label>
+          <label><input type="checkbox" value="28"/> 28</label>
+          <label><input type="checkbox" value="30"/> 30</label>
+          <label><input type="checkbox" value="32"/> 32</label>
+          <label><input type="checkbox" value="34"/> 34</label>
+          <label><input type="checkbox" value="36"/> 36</label>
+          <label><input type="checkbox" value="38"/> 38</label>
+          <label><input type="checkbox" value="Único"/> Único</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Texto para WhatsApp</label>
+        <input type="text" id="pWaText" placeholder="Ej: la gorra snapback"/>
+        <span class="form-hint">Se auto-completa si lo dejás vacío</span>
+      </div>
+      <div class="form-group">
+        <label>Foto del producto *</label>
+        <div class="img-upload-area" id="imgUploadArea">
+          <input type="file" id="pImg" accept="image/*" hidden/>
+          <div class="img-placeholder" id="imgPlaceholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <p>Click para subir foto</p>
+            <span>JPG, PNG, WEBP</span>
+          </div>
+          <img id="imgPreview" src="" alt="" class="img-preview hidden"/>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" id="modalCancel">Cancelar</button>
+      <button class="btn-primary" id="saveProduct">Guardar producto</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="admin-toasts" id="adminToasts"></div>
+
+<script src="admin.js"></script>
+</body>
+</html>
